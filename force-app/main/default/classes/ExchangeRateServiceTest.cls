@@ -16,7 +16,7 @@ private class ExchangeRateServiceTest {
         
         // Call the method to test
         Test.startTest();
-        ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates();
+        ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates('USD');
         Test.stopTest();
         
         // Verify the result
@@ -37,7 +37,7 @@ private class ExchangeRateServiceTest {
         // Call the method to test and expect an exception
         Test.startTest();
         try {
-            ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates();
+            ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates('USD');
             Assert.fail('Should have thrown an exception');
         } catch (Exception e) {
             Assert.isTrue(e.getMessage().contains('Error'), 'Exception message should mention error');
@@ -95,7 +95,7 @@ private class ExchangeRateServiceTest {
         
         // Call the method to test
         Test.startTest();
-        List<Exchange_Rate__c> rates = ExchangeRateService.updateExchangeRates();
+        List<Exchange_Rate__c> rates = ExchangeRateService.updateExchangeRates('USD');
         Test.stopTest();
         
         // Verify the results
@@ -107,5 +107,22 @@ private class ExchangeRateServiceTest {
             FROM Exchange_Rate__c
         ];
         Assert.areEqual(9, insertedRates.size(), 'Should have 9 records in the database');
+    }
+
+    @isTest
+    static void getLatestRates_exception() {
+
+        Boolean exceptionCaught = false;
+        Test.setMock(HttpCalloutMock.class, new ExchangeRateMock.ExchangeRateMockFailed());
+
+        Test.startTest();
+        try {
+            ExchangeRateService.getLatestRates('USD');
+        } catch (CalloutException e) {
+            exceptionCaught = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(exceptionCaught, 'A Callout Exception should have been caught.');
     }
 }
