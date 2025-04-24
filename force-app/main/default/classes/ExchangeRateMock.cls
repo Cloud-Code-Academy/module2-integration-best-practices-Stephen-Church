@@ -86,4 +86,11 @@ public class ExchangeRateMock implements HttpCalloutMock {
     public static String getInvalidResponse() {
         return '{This is not valid JSON}';
     }
+
+    public class ExchangeRateMockFailed implements HttpCalloutMock {
+        
+        public HttpResponse respond(HttpRequest request) {
+            throw new CalloutException('A callout exception occurred');
+        }
+    }
 }
